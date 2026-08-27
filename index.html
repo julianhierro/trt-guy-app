@@ -1,0 +1,317 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<title>TRT Guy</title>
+
+<link rel="manifest" href="manifest.json">
+<meta name="theme-color" content="#0b0d10">
+<link rel="apple-touch-icon" href="icon-180.png">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="apple-mobile-web-app-title" content="TRT Guy">
+
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@600;700&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+
+<style>
+:root{
+  --bg:#0b0d10; --card:#15181d; --card-2:#1b1f26; --line:#262b33; --line-2:#333944;
+  --txt:#f2f4f7; --mut:#8b93a1; --acc:#1a5cff; --acc-soft:rgba(26,92,255,.14);
+  --done:#4b535f; --display:"Barlow Condensed",Impact,sans-serif;
+}
+*{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
+html,body{margin:0;padding:0;background:var(--bg);color:var(--txt);
+  font:400 16px/1.5 Inter,system-ui,-apple-system,sans-serif;overscroll-behavior-y:none}
+
+/* room for the notch and the home indicator */
+.top{position:sticky;top:0;z-index:10;background:rgba(11,13,16,.92);
+  backdrop-filter:saturate(1.5) blur(10px);border-bottom:1px solid var(--line);
+  padding:calc(env(safe-area-inset-top) + 12px) 16px 12px}
+.brandline{display:flex;align-items:center;justify-content:space-between;gap:12px}
+.brand{font-family:var(--display);font-size:22px;letter-spacing:.1em;text-transform:uppercase}
+.brand span{color:var(--acc)}
+.sync{font:600 11.5px/1 Inter,sans-serif;color:var(--mut);display:flex;align-items:center;gap:6px}
+.dot{width:7px;height:7px;border-radius:50%;background:var(--done)}
+.dot.on{background:#22c55e}.dot.err{background:#ef4444}
+
+.tabs{display:flex;gap:6px;margin-top:12px}
+.tab{flex:1;padding:9px 8px;border:0;border-radius:9px;background:var(--card);color:var(--mut);
+  font:600 13.5px/1 Inter,sans-serif;cursor:pointer}
+.tab.on{background:var(--acc);color:#fff}
+
+.wrap{max-width:640px;margin:0 auto;padding:14px 16px calc(env(safe-area-inset-bottom) + 120px)}
+
+/* add box */
+.add{position:fixed;left:0;right:0;bottom:0;z-index:11;padding:10px 16px calc(env(safe-area-inset-bottom) + 10px);
+  background:rgba(11,13,16,.95);backdrop-filter:blur(10px);border-top:1px solid var(--line)}
+.add-in{max-width:640px;margin:0 auto;display:flex;gap:8px;align-items:flex-end}
+.add textarea{flex:1;min-height:46px;max-height:120px;resize:none;padding:12px 14px;border-radius:12px;
+  border:1px solid var(--line-2);background:var(--card);color:var(--txt);
+  font:400 16px/1.35 Inter,sans-serif}
+.add textarea:focus{outline:2px solid var(--acc);outline-offset:1px;border-color:transparent}
+.add button{flex:none;width:46px;height:46px;border:0;border-radius:12px;background:var(--acc);
+  color:#fff;font-size:22px;line-height:1;cursor:pointer}
+.kinds{display:flex;gap:6px;max-width:640px;margin:0 auto 8px}
+.kind{padding:6px 11px;border-radius:999px;border:1px solid var(--line-2);background:var(--card);
+  color:var(--mut);font:600 12px/1 Inter,sans-serif;cursor:pointer}
+.kind.on{background:var(--acc-soft);border-color:var(--acc);color:#9dbcff}
+
+/* items */
+.day{margin:18px 0 8px;font:700 11.5px/1 Inter,sans-serif;letter-spacing:.12em;
+  text-transform:uppercase;color:var(--mut)}
+.item{display:flex;gap:12px;align-items:flex-start;padding:13px 14px;margin-bottom:8px;
+  background:var(--card);border:1px solid var(--line);border-radius:13px}
+.item.done{background:transparent;border-style:dashed}
+.check{flex:none;width:24px;height:24px;margin-top:1px;border-radius:7px;border:2px solid var(--line-2);
+  background:none;cursor:pointer;display:flex;align-items:center;justify-content:center;padding:0}
+.check svg{width:14px;height:14px;opacity:0;color:#fff}
+.item.done .check{background:var(--acc);border-color:var(--acc)}
+.item.done .check svg{opacity:1}
+.body{flex:1;min-width:0}
+.text{font-size:15.5px;line-height:1.45;word-wrap:break-word;white-space:pre-wrap}
+.item.done .text{color:var(--done);text-decoration:line-through}
+.meta{margin-top:5px;display:flex;gap:8px;align-items:center}
+.chip{font:700 10px/1 Inter,sans-serif;letter-spacing:.09em;text-transform:uppercase;
+  padding:4px 7px;border-radius:5px;background:var(--card-2);color:var(--mut)}
+.chip.task{color:#9dbcff;background:var(--acc-soft)}
+.chip.idea{color:#f0c36b;background:rgba(240,195,107,.12)}
+.chip.note{color:#a7f3d0;background:rgba(167,243,208,.1)}
+.del{flex:none;border:0;background:none;color:var(--done);font-size:19px;line-height:1;
+  cursor:pointer;padding:2px 4px}
+.del:hover{color:#ef4444}
+
+.empty{text-align:center;color:var(--mut);padding:56px 20px;font-size:15px;line-height:1.6}
+.empty b{color:var(--txt);display:block;margin-bottom:6px;font-size:16px}
+
+/* stats */
+.stats{display:grid;grid-template-columns:repeat(2,1fr);gap:10px;margin-bottom:6px}
+.stat{background:var(--card);border:1px solid var(--line);border-radius:13px;padding:14px}
+.stat .n{font-family:var(--display);font-size:30px;line-height:1;margin-bottom:3px}
+.stat .l{font:600 11px/1.3 Inter,sans-serif;letter-spacing:.09em;text-transform:uppercase;color:var(--mut)}
+.links{margin-top:14px;display:grid;gap:8px}
+.link{display:flex;align-items:center;justify-content:space-between;gap:10px;padding:14px;
+  background:var(--card);border:1px solid var(--line);border-radius:13px;color:var(--txt);
+  text-decoration:none;font-size:15px}
+.link span{color:var(--mut);font-size:18px}
+.hint{margin-top:16px;color:var(--mut);font-size:13px;line-height:1.6;text-align:center}
+</style>
+</head>
+<body>
+
+<header class="top">
+  <div class="brandline">
+    <div class="brand">TRT <span>GUY</span></div>
+    <div class="sync"><span class="dot" id="dot"></span><span id="syncTxt">offline</span></div>
+  </div>
+  <div class="tabs">
+    <button class="tab on" data-tab="list" type="button">To-do</button>
+    <button class="tab" data-tab="done" type="button">Done</button>
+    <button class="tab" data-tab="site" type="button">Site</button>
+  </div>
+</header>
+
+<main class="wrap">
+  <div id="paneList"></div>
+  <div id="paneDone" hidden></div>
+
+  <div id="paneSite" hidden>
+    <div class="stats" id="stats"></div>
+    <div class="links">
+      <a class="link" href="https://julianhierro.github.io/trt-guy-coaching/" target="_blank" rel="noopener">Coaching page <span>&rarr;</span></a>
+      <a class="link" href="https://julianhierro.github.io/trt-guy-coaching/?edit=1" target="_blank" rel="noopener">Edit the page <span>&rarr;</span></a>
+      <a class="link" href="https://julianhierro.github.io/trt-guy-control/" target="_blank" rel="noopener">Control Center <span>&rarr;</span></a>
+      <a class="link" href="https://app.gohighlevel.com/" target="_blank" rel="noopener">GoHighLevel <span>&rarr;</span></a>
+    </div>
+    <p class="hint">Numbers are the last 30 days on the coaching page.</p>
+  </div>
+</main>
+
+<div class="add">
+  <div class="kinds">
+    <button class="kind on" data-kind="task" type="button">Task</button>
+    <button class="kind" data-kind="idea" type="button">Idea</button>
+    <button class="kind" data-kind="note" type="button">Note</button>
+  </div>
+  <form class="add-in" id="addForm">
+    <textarea id="addText" rows="1" placeholder="Add a task, an idea, a note…" enterkeyhint="done"></textarea>
+    <button type="submit" aria-label="Add">+</button>
+  </form>
+</div>
+
+<script>
+/* Notes live in two places on purpose: localStorage so the app opens instantly
+   and works with no signal, and the shared store so the same list shows up on
+   the laptop. Whichever copy was edited most recently wins. */
+var API  = "https://jv-dashboard-chi.vercel.app/api/content?site=td-todos&page=1";
+var LOCAL = "trtguy-todos";
+var STATS = "https://jv-dashboard-chi.vercel.app/api/pagestats?p=trtdad-coaching-gate";
+
+var state = { items: [], updatedAt: 0 };
+var kind = "task";
+
+function uid() { return Date.now().toString(36) + Math.random().toString(36).slice(2, 7); }
+function save() {
+  state.updatedAt = Date.now();
+  try { localStorage.setItem(LOCAL, JSON.stringify(state)); } catch (e) {}
+  render();
+  push();
+}
+function loadLocal() {
+  try {
+    var v = JSON.parse(localStorage.getItem(LOCAL) || "null");
+    if (v && Array.isArray(v.items)) state = v;
+  } catch (e) {}
+}
+
+var syncing = false;
+function setSync(cls, txt) {
+  document.getElementById("dot").className = "dot " + cls;
+  document.getElementById("syncTxt").textContent = txt;
+}
+function push() {
+  if (syncing) return;
+  syncing = true;
+  fetch(API, { method: "POST", headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({ password: "", edits: [{ eid: "todos", html: JSON.stringify(state) }] }) })
+    .then(function (r) { setSync(r.ok ? "on" : "err", r.ok ? "synced" : "not synced"); })
+    .catch(function () { setSync("err", "offline"); })
+    .then(function () { syncing = false; });
+}
+function pull() {
+  fetch(API + "&t=" + Date.now(), { cache: "no-store" })
+    .then(function (r) { return r.ok ? r.json() : null; })
+    .then(function (d) {
+      var rec = d && Array.isArray(d.edits) && d.edits[0];
+      if (!rec || !rec.html) { setSync("on", "synced"); return; }
+      var remote = JSON.parse(rec.html);
+      // last write wins — no merge, so the same list can't fork on two devices
+      if (remote && Array.isArray(remote.items) && (remote.updatedAt || 0) > (state.updatedAt || 0)) {
+        state = remote;
+        try { localStorage.setItem(LOCAL, JSON.stringify(state)); } catch (e) {}
+        render();
+      }
+      setSync("on", "synced");
+    })
+    .catch(function () { setSync("err", "offline"); });
+}
+
+function dayLabel(ts) {
+  var d = new Date(ts), t = new Date();
+  var same = function (a, b) { return a.toDateString() === b.toDateString(); };
+  if (same(d, t)) return "Today";
+  var y = new Date(t.getTime() - 86400000);
+  if (same(d, y)) return "Yesterday";
+  return d.toLocaleDateString(undefined, { weekday: "short", day: "numeric", month: "short" });
+}
+
+function itemHTML(it) {
+  return '<div class="item' + (it.done ? " done" : "") + '" data-id="' + it.id + '">' +
+    '<button class="check" type="button" aria-label="Done">' +
+      '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3.4" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6 9 17l-5-5"/></svg>' +
+    '</button>' +
+    '<div class="body"><div class="text"></div>' +
+      '<div class="meta"><span class="chip ' + it.kind + '">' + it.kind + '</span></div>' +
+    '</div>' +
+    '<button class="del" type="button" aria-label="Delete">&times;</button></div>';
+}
+
+function renderInto(el, items, emptyTitle, emptyBody) {
+  if (!items.length) {
+    el.innerHTML = '<div class="empty"><b>' + emptyTitle + '</b>' + emptyBody + '</div>';
+    return;
+  }
+  var html = "", lastDay = "";
+  items.forEach(function (it) {
+    var day = dayLabel(it.at);
+    if (day !== lastDay) { html += '<div class="day">' + day + "</div>"; lastDay = day; }
+    html += itemHTML(it);
+  });
+  el.innerHTML = html;
+  // set text as textContent so a note can never inject markup
+  var nodes = el.querySelectorAll(".item");
+  items.forEach(function (it, i) {
+    if (nodes[i]) nodes[i].querySelector(".text").textContent = it.text;
+  });
+}
+
+function render() {
+  var open = state.items.filter(function (i) { return !i.done; }).sort(function (a, b) { return b.at - a.at; });
+  var done = state.items.filter(function (i) { return i.done; }).sort(function (a, b) { return (b.doneAt || b.at) - (a.doneAt || a.at); });
+  renderInto(document.getElementById("paneList"), open,
+    "Nothing on the list", "Add a task, an idea for content, or a note you don't want to lose.");
+  renderInto(document.getElementById("paneDone"), done,
+    "Nothing crossed off yet", "Things you tick off show up here.");
+}
+
+document.addEventListener("click", function (e) {
+  var item = e.target.closest && e.target.closest(".item");
+  if (item) {
+    var id = item.getAttribute("data-id");
+    var it = state.items.find(function (x) { return x.id === id; });
+    if (!it) return;
+    if (e.target.closest(".check")) { it.done = !it.done; it.doneAt = Date.now(); save(); return; }
+    if (e.target.closest(".del")) {
+      state.items = state.items.filter(function (x) { return x.id !== id; });
+      save(); return;
+    }
+  }
+  var tab = e.target.closest && e.target.closest(".tab");
+  if (tab) {
+    document.querySelectorAll(".tab").forEach(function (t) { t.classList.toggle("on", t === tab); });
+    var which = tab.getAttribute("data-tab");
+    document.getElementById("paneList").hidden = which !== "list";
+    document.getElementById("paneDone").hidden = which !== "done";
+    document.getElementById("paneSite").hidden = which !== "site";
+    document.querySelector(".add").style.display = which === "site" ? "none" : "";
+    if (which === "site") loadStats();
+    return;
+  }
+  var k = e.target.closest && e.target.closest(".kind");
+  if (k) {
+    kind = k.getAttribute("data-kind");
+    document.querySelectorAll(".kind").forEach(function (b) { b.classList.toggle("on", b === k); });
+  }
+});
+
+var ta = document.getElementById("addText");
+ta.addEventListener("input", function () { ta.style.height = "auto"; ta.style.height = Math.min(ta.scrollHeight, 120) + "px"; });
+document.getElementById("addForm").addEventListener("submit", function (e) {
+  e.preventDefault();
+  var text = ta.value.trim();
+  if (!text) return;
+  state.items.push({ id: uid(), text: text, kind: kind, done: false, at: Date.now() });
+  ta.value = ""; ta.style.height = "auto";
+  save();
+});
+
+var statsLoaded = false;
+function loadStats() {
+  if (statsLoaded) return;
+  fetch(STATS + "&t=" + Date.now(), { cache: "no-store" })
+    .then(function (r) { return r.ok ? r.json() : null; })
+    .then(function (d) {
+      if (!d) return;
+      var rate = d.visitors ? Math.round((d.optins / d.visitors) * 1000) / 10 : 0;
+      document.getElementById("stats").innerHTML =
+        '<div class="stat"><div class="n">' + (d.visitors || 0) + '</div><div class="l">Visitors</div></div>' +
+        '<div class="stat"><div class="n">' + (d.optins || 0) + '</div><div class="l">Opt-ins</div></div>' +
+        '<div class="stat"><div class="n">' + rate + '%</div><div class="l">Conversion</div></div>' +
+        '<div class="stat"><div class="n">' + (d.views || 0) + '</div><div class="l">Views</div></div>';
+      statsLoaded = true;
+    })
+    .catch(function () {
+      document.getElementById("stats").innerHTML = '<div class="stat"><div class="l">Stats unavailable offline</div></div>';
+    });
+}
+
+loadLocal();
+render();
+pull();
+window.addEventListener("focus", pull);
+if ("serviceWorker" in navigator) navigator.serviceWorker.register("sw.js").catch(function () {});
+</script>
+</body>
+</html>
