@@ -97,6 +97,90 @@ html,body{margin:0;padding:0;background:var(--bg);color:var(--txt);
   text-decoration:none;font-size:15px}
 .link span{color:var(--mut);font-size:18px}
 .hint{margin-top:16px;color:var(--mut);font-size:13px;line-height:1.6;text-align:center}
+/* priority + the notes badge on a row */
+.pi{font:700 10px/1 Inter,sans-serif;letter-spacing:.09em;text-transform:uppercase;
+  padding:4px 7px;border-radius:5px;border:1px solid transparent}
+.pi.p1{color:#ff9a8b;background:rgba(239,68,68,.14);border-color:rgba(239,68,68,.3)}
+.pi.p2{color:#f0c36b;background:rgba(240,195,107,.11)}
+.pi.p3{color:var(--mut);background:var(--card-2)}
+.nt{font:600 10px/1 Inter,sans-serif;letter-spacing:.06em;color:var(--mut)}
+.chev{flex:none;border:0;background:none;color:var(--done);font-size:22px;line-height:1;
+  cursor:pointer;padding:0 2px;align-self:center}
+.kdiv{flex:none;width:1px;background:var(--line-2);margin:2px 3px}
+.kind.pri{padding:7px 11px;font-size:11.5px}
+.tab .tn{display:none;margin-left:6px;padding:2px 6px;border-radius:999px;background:var(--acc);
+  color:#fff;font-size:10.5px}
+.tab .tn.has{display:inline-block}
+.tab.on .tn{background:rgba(255,255,255,.24)}
+
+/* a sheet: one open to-do, or one open conversation. Full screen on a phone. */
+.sheet{position:fixed;inset:0;z-index:20;background:var(--bg);display:none;flex-direction:column}
+.sheet.open{display:flex}
+.sheet-bar{display:flex;align-items:center;gap:10px;border-bottom:1px solid var(--line);
+  padding:calc(env(safe-area-inset-top) + 12px) 16px 12px}
+.sb-back{border:0;background:none;color:var(--acc);font:600 15px Inter,sans-serif;cursor:pointer;padding:0}
+.sb-mid{flex:1;text-align:center;font:600 11.5px/1.3 Inter,sans-serif;letter-spacing:.1em;
+  text-transform:uppercase;color:var(--mut);overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.sb-del{border:1px solid var(--line-2);background:none;color:var(--mut);border-radius:8px;
+  font:700 10.5px/1 Inter,sans-serif;letter-spacing:.1em;text-transform:uppercase;padding:8px 10px;cursor:pointer}
+.sheet-body{flex:1;overflow:auto;padding:16px;display:flex;flex-direction:column;gap:12px}
+.sh-title{flex:none;border:0;background:none;color:var(--txt);font:700 21px/1.3 Inter,sans-serif;
+  resize:none;outline:0;padding:0;overflow:hidden}
+.sh-pri,.sh-kind{flex:none;margin:0}
+.sh-notes{flex:1;min-height:240px;resize:none;padding:13px 14px;border-radius:12px;
+  border:1px solid var(--line-2);background:var(--card);color:var(--txt);
+  font:400 16px/1.6 Inter,sans-serif;outline:0}
+.sh-notes:focus{border-color:var(--acc)}
+.sheet-foot{border-top:1px solid var(--line);padding:12px 16px calc(env(safe-area-inset-bottom) + 14px)}
+.sheet-foot button{width:100%;padding:14px;border-radius:12px;border:1px solid var(--line-2);
+  background:transparent;color:var(--txt);font:700 15px Inter,sans-serif;cursor:pointer}
+.sheet-foot button.on{background:var(--acc);border-color:var(--acc)}
+
+/* inbox */
+.in-gate{display:flex;flex-direction:column;gap:12px;padding:26px 4px}
+.in-gate p{margin:0;color:var(--mut);font-size:14.5px;line-height:1.6}
+.in-gate form{display:flex;gap:8px}
+.in-gate input{flex:1;background:var(--card);border:1px solid var(--line-2);border-radius:11px;
+  color:var(--txt);padding:13px 14px;font:400 16px Inter,sans-serif;outline:0}
+.in-gate input:focus{border-color:var(--acc)}
+.in-gate button{border:0;border-radius:11px;background:var(--acc);color:#fff;cursor:pointer;
+  font:700 13px Inter,sans-serif;padding:0 18px}
+.in-err{color:#ff9a8b;font-size:13px;min-height:17px}
+.in-filters{display:flex;gap:6px;margin-bottom:12px;overflow:auto}
+.cv{display:flex;gap:11px;align-items:flex-start;padding:13px 14px;margin-bottom:8px;
+  background:var(--card);border:1px solid var(--line);border-radius:13px}
+.cv.unread{border-color:rgba(26,92,255,.5);background:rgba(26,92,255,.07)}
+.cv .av{flex:none;width:36px;height:36px;border-radius:50%;background:var(--card-2);color:#9dbcff;
+  display:flex;align-items:center;justify-content:center;font:700 14px Inter,sans-serif}
+.cv .bd{flex:1;min-width:0}
+.cv .nm{display:flex;align-items:center;gap:7px}
+.cv .nm b{font-size:15px;font-weight:600;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.cv .ago{flex:none;margin-left:auto;font:600 10.5px Inter,sans-serif;color:var(--mut)}
+.cv .pv{margin-top:4px;font-size:13.5px;line-height:1.45;color:var(--mut);
+  display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden}
+.cv .pv i{font-style:normal;color:var(--done)}
+.ch{font:700 9.5px/1 Inter,sans-serif;letter-spacing:.1em;text-transform:uppercase;
+  padding:4px 6px;border-radius:5px;background:var(--card-2);color:var(--mut)}
+.ch.email{color:#9dbcff;background:var(--acc-soft)}
+.ch.ig{color:#f7a8d8;background:rgba(247,168,216,.13)}
+.ch.sms{color:#a7f3d0;background:rgba(167,243,208,.1)}
+.ch.fb{color:#8ab4ff;background:rgba(138,180,255,.13)}
+.cv .un{flex:none;width:8px;height:8px;border-radius:50%;background:var(--acc)}
+.in-msgs{flex:1;overflow:auto;padding:16px;display:flex;flex-direction:column;gap:9px}
+.bub{max-width:84%;padding:11px 14px;border-radius:16px;font-size:15px;line-height:1.5;
+  white-space:pre-wrap;word-wrap:break-word}
+.bub.in{align-self:flex-start;background:var(--card);border:1px solid var(--line);border-bottom-left-radius:5px}
+.bub.out{align-self:flex-end;background:var(--acc);color:#fff;border-bottom-right-radius:5px}
+.bub .st{display:block;margin-top:6px;font:600 9.5px/1 Inter,sans-serif;letter-spacing:.1em;
+  text-transform:uppercase;opacity:.62}
+.in-reply{border-top:1px solid var(--line);padding:10px 16px calc(env(safe-area-inset-bottom) + 12px)}
+.in-on{margin-bottom:8px;font:600 10.5px/1 Inter,sans-serif;letter-spacing:.11em;
+  text-transform:uppercase;color:var(--mut)}
+.in-reply textarea{flex:1;min-height:46px;max-height:120px;resize:none;padding:12px 14px;border-radius:12px;
+  border:1px solid var(--line-2);background:var(--card);color:var(--txt);font:400 16px/1.35 Inter,sans-serif;outline:0}
+.in-reply textarea:focus{border-color:var(--acc)}
+.in-reply button{flex:none;width:46px;height:46px;border:0;border-radius:12px;background:var(--acc);
+  color:#fff;font-size:20px;line-height:1;cursor:pointer}
 </style>
 </head>
 <body>
@@ -108,6 +192,7 @@ html,body{margin:0;padding:0;background:var(--bg);color:var(--txt);
   </div>
   <div class="tabs">
     <button class="tab on" data-tab="list" type="button">To-do</button>
+    <button class="tab" data-tab="inbox" type="button">Inbox<span class="tn" id="inboxN"></span></button>
     <button class="tab" data-tab="done" type="button">Done</button>
     <button class="tab" data-tab="site" type="button">Site</button>
   </div>
@@ -116,6 +201,24 @@ html,body{margin:0;padding:0;background:var(--bg);color:var(--txt);
 <main class="wrap">
   <div id="paneList"></div>
   <div id="paneDone" hidden></div>
+
+  <div id="paneInbox" hidden>
+    <div class="in-gate" id="inGate">
+      <p>Real conversations with real leads, so this one asks for the passcode once.</p>
+      <form id="inGateForm">
+        <input type="password" id="inKey" placeholder="Passcode" autocomplete="current-password">
+        <button type="submit">Unlock</button>
+      </form>
+      <span class="in-err" id="inGateErr"></span>
+    </div>
+    <div class="in-filters" id="inFilters" hidden>
+      <button class="kind on" data-ch="" type="button">All</button>
+      <button class="kind" data-ch="email" type="button">Email</button>
+      <button class="kind" data-ch="ig" type="button">IG</button>
+      <button class="kind" data-ch="sms" type="button">SMS</button>
+    </div>
+    <div id="inList"></div>
+  </div>
 
   <div id="paneSite" hidden>
     <div class="stats" id="stats"></div>
@@ -129,11 +232,55 @@ html,body{margin:0;padding:0;background:var(--bg);color:var(--txt);
   </div>
 </main>
 
+<div class="sheet" id="todoSheet">
+  <div class="sheet-bar">
+    <button type="button" class="sb-back" id="tdBack">&larr; List</button>
+    <span class="sb-mid" id="tdWhen"></span>
+    <button type="button" class="sb-del" id="tdDel">Delete</button>
+  </div>
+  <div class="sheet-body">
+    <textarea class="sh-title" id="tdTitle" rows="1" placeholder="What is it?"></textarea>
+    <div class="kinds sh-pri" id="tdPri">
+      <button class="kind" data-pri="1" type="button">High</button>
+      <button class="kind" data-pri="2" type="button">Medium</button>
+      <button class="kind" data-pri="3" type="button">Low</button>
+    </div>
+    <div class="kinds sh-kind" id="tdKind">
+      <button class="kind" data-kind="task" type="button">Task</button>
+      <button class="kind" data-kind="idea" type="button">Idea</button>
+      <button class="kind" data-kind="note" type="button">Note</button>
+    </div>
+    <textarea class="sh-notes" id="tdNotes" placeholder="Write it out in here &mdash; the script, the outline, the numbers."></textarea>
+  </div>
+  <div class="sheet-foot"><button type="button" id="tdDone">Mark done</button></div>
+</div>
+
+<div class="sheet" id="inSheet">
+  <div class="sheet-bar">
+    <button type="button" class="sb-back" id="inBack">&larr; Inbox</button>
+    <span class="sb-mid" id="inWho"></span>
+    <span style="width:52px"></span>
+  </div>
+  <div class="in-msgs" id="inMsgs"></div>
+  <div class="in-reply">
+    <div class="in-on" id="inOn"></div>
+    <form class="add-in" id="inForm">
+      <textarea id="inText" rows="1" placeholder="Reply&hellip;" enterkeyhint="send"></textarea>
+      <button type="submit" aria-label="Send">&uarr;</button>
+    </form>
+    <span class="in-err" id="inErr"></span>
+  </div>
+</div>
+
 <div class="add">
-  <div class="kinds">
+  <div class="kinds" id="newKinds">
     <button class="kind on" data-kind="task" type="button">Task</button>
     <button class="kind" data-kind="idea" type="button">Idea</button>
     <button class="kind" data-kind="note" type="button">Note</button>
+    <span class="kdiv"></span>
+    <button class="kind pri" data-pri="1" type="button">High</button>
+    <button class="kind pri on" data-pri="2" type="button">Med</button>
+    <button class="kind pri" data-pri="3" type="button">Low</button>
   </div>
   <form class="add-in" id="addForm">
     <textarea id="addText" rows="1" placeholder="Add a task, an idea, a note…" enterkeyhint="done"></textarea>
@@ -150,7 +297,7 @@ var LOCAL = "trtguy-todos";
 var STATS = "https://jv-dashboard-chi.vercel.app/api/pagestats?p=trtdad-coaching-gate";
 
 var state = { items: [], updatedAt: 0 };
-var kind = "task";
+var kind = "task", pri = 2;
 
 function uid() { return Date.now().toString(36) + Math.random().toString(36).slice(2, 7); }
 function save() {
@@ -191,7 +338,9 @@ function pull() {
       if (remote && Array.isArray(remote.items) && (remote.updatedAt || 0) > (state.updatedAt || 0)) {
         state = remote;
         try { localStorage.setItem(LOCAL, JSON.stringify(state)); } catch (e) {}
-        render();
+        var typing = document.activeElement &&
+          document.getElementById("todoSheet").contains(document.activeElement);
+        if (!typing) render();
       }
       setSync("on", "synced");
     })
@@ -207,26 +356,33 @@ function dayLabel(ts) {
   return d.toLocaleDateString(undefined, { weekday: "short", day: "numeric", month: "short" });
 }
 
+var PRI = { 1: "High", 2: "Medium", 3: "Low" };
+function priOf(it) { return PRI[it.pri] ? it.pri : 2; }      // items from before: Medium
+
 function itemHTML(it) {
+  var p = priOf(it);
   return '<div class="item' + (it.done ? " done" : "") + '" data-id="' + it.id + '">' +
     '<button class="check" type="button" aria-label="Done">' +
       '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3.4" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6 9 17l-5-5"/></svg>' +
     '</button>' +
     '<div class="body"><div class="text"></div>' +
-      '<div class="meta"><span class="chip ' + it.kind + '">' + it.kind + '</span></div>' +
+      '<div class="meta"><span class="chip ' + it.kind + '">' + it.kind + '</span>' +
+        '<span class="pi p' + p + '">' + PRI[p] + '</span>' +
+        ((it.notes || "").trim() ? '<span class="nt">&#128221; notes</span>' : '') +
+      '</div>' +
     '</div>' +
-    '<button class="del" type="button" aria-label="Delete">&times;</button></div>';
+    '<button class="chev" type="button" aria-label="Open">&rsaquo;</button></div>';
 }
 
-function renderInto(el, items, emptyTitle, emptyBody) {
+function renderInto(el, items, emptyTitle, emptyBody, groupOf) {
   if (!items.length) {
     el.innerHTML = '<div class="empty"><b>' + emptyTitle + '</b>' + emptyBody + '</div>';
     return;
   }
-  var html = "", lastDay = "";
+  var html = "", last = null;
   items.forEach(function (it) {
-    var day = dayLabel(it.at);
-    if (day !== lastDay) { html += '<div class="day">' + day + "</div>"; lastDay = day; }
+    var g = groupOf ? groupOf(it) : dayLabel(it.at);
+    if (g !== last) { html += '<div class="day">' + g + "</div>"; last = g; }
     html += itemHTML(it);
   });
   el.innerHTML = html;
@@ -238,25 +394,28 @@ function renderInto(el, items, emptyTitle, emptyBody) {
 }
 
 function render() {
-  var open = state.items.filter(function (i) { return !i.done; }).sort(function (a, b) { return b.at - a.at; });
-  var done = state.items.filter(function (i) { return i.done; }).sort(function (a, b) { return (b.doneAt || b.at) - (a.doneAt || a.at); });
+  // highest priority first, newest first inside a band — the list is meant to
+  // answer "what next", not "what did I type last"
+  var open = state.items.filter(function (i) { return !i.done; })
+    .sort(function (a, b) { return (priOf(a) - priOf(b)) || (b.at - a.at); });
+  var done = state.items.filter(function (i) { return i.done; })
+    .sort(function (a, b) { return (b.doneAt || b.at) - (a.doneAt || a.at); });
   renderInto(document.getElementById("paneList"), open,
-    "Nothing on the list", "Add a task, an idea for content, or a note you don't want to lose.");
+    "Nothing on the list", "Add a task, an idea for content, or a note you don't want to lose.",
+    function (it) { return PRI[priOf(it)]; });
   renderInto(document.getElementById("paneDone"), done,
-    "Nothing crossed off yet", "Things you tick off show up here.");
+    "Nothing crossed off yet", "Things you tick off show up here.", null);
+  if (sheetId) paintSheet();
 }
 
 document.addEventListener("click", function (e) {
   var item = e.target.closest && e.target.closest(".item");
   if (item) {
-    var id = item.getAttribute("data-id");
-    var it = state.items.find(function (x) { return x.id === id; });
+    var it = state.items.find(function (x) { return x.id === item.getAttribute("data-id"); });
     if (!it) return;
-    if (e.target.closest(".check")) { it.done = !it.done; it.doneAt = Date.now(); save(); return; }
-    if (e.target.closest(".del")) {
-      state.items = state.items.filter(function (x) { return x.id !== id; });
-      save(); return;
-    }
+    if (e.target.closest(".check")) { it.done = !it.done; it.doneAt = Date.now(); save(); }
+    else openSheet(it.id);                       // the row opens it; deleting lives inside
+    return;
   }
   var tab = e.target.closest && e.target.closest(".tab");
   if (tab) {
@@ -265,14 +424,83 @@ document.addEventListener("click", function (e) {
     document.getElementById("paneList").hidden = which !== "list";
     document.getElementById("paneDone").hidden = which !== "done";
     document.getElementById("paneSite").hidden = which !== "site";
-    document.querySelector(".add").style.display = which === "site" ? "none" : "";
+    document.getElementById("paneInbox").hidden = which !== "inbox";
+    document.querySelector(".add").style.display = (which === "list" || which === "done") ? "" : "none";
     if (which === "site") loadStats();
+    if (which === "inbox") inEnter();
     return;
   }
-  var k = e.target.closest && e.target.closest(".kind");
+  // the add box carries both rows — priority first, or the kind handler claims it
+  var np = e.target.closest && e.target.closest("#newKinds .kind.pri");
+  if (np) {
+    pri = +np.getAttribute("data-pri");
+    document.querySelectorAll("#newKinds .kind.pri").forEach(function (b) { b.classList.toggle("on", b === np); });
+    return;
+  }
+  var k = e.target.closest && e.target.closest("#newKinds .kind");
   if (k) {
     kind = k.getAttribute("data-kind");
-    document.querySelectorAll(".kind").forEach(function (b) { b.classList.toggle("on", b === k); });
+    document.querySelectorAll("#newKinds .kind:not(.pri)").forEach(function (b) { b.classList.toggle("on", b === k); });
+  }
+});
+
+/* ── one to-do, opened ─────────────────────────────────────────────────────
+   The point of opening it is the body: the task to film the VSL is where the
+   VSL script belongs, not in a second app. */
+var sheetId = null, typeTimer = null;
+function openSheet(id) {
+  sheetId = id;
+  document.getElementById("todoSheet").classList.add("open");
+  paintSheet();
+}
+function closeSheet() {
+  sheetId = null;
+  document.getElementById("todoSheet").classList.remove("open");
+  render();
+}
+function grow(el) { el.style.height = "auto"; el.style.height = el.scrollHeight + "px"; }
+function paintSheet() {
+  var it = state.items.find(function (x) { return x.id === sheetId; });
+  if (!it) return closeSheet();
+  var p = priOf(it);
+  var title = document.getElementById("tdTitle"), notes = document.getElementById("tdNotes");
+  if (document.activeElement !== title) { title.value = it.text; grow(title); }
+  if (document.activeElement !== notes) notes.value = it.notes || "";
+  document.querySelectorAll("#tdPri .kind").forEach(function (b) { b.classList.toggle("on", +b.getAttribute("data-pri") === p); });
+  document.querySelectorAll("#tdKind .kind").forEach(function (b) { b.classList.toggle("on", b.getAttribute("data-kind") === it.kind); });
+  var d = document.getElementById("tdDone");
+  d.classList.toggle("on", !!it.done);
+  d.textContent = it.done ? "\u2713 Done" : "Mark done";
+  document.getElementById("tdWhen").textContent =
+    "Added " + new Date(it.at).toLocaleDateString(undefined, { day: "numeric", month: "short", year: "numeric" });
+}
+function sheetItem() { return state.items.find(function (x) { return x.id === sheetId; }); }
+function typed() {                          // one sync per pause, not per keystroke
+  clearTimeout(typeTimer);
+  setSync("", "typing…");
+  typeTimer = setTimeout(function () { state.updatedAt = Date.now();
+    try { localStorage.setItem(LOCAL, JSON.stringify(state)); } catch (e) {}
+    push(); }, 700);
+}
+document.getElementById("tdBack").addEventListener("click", closeSheet);
+document.getElementById("tdTitle").addEventListener("input", function (e) {
+  var it = sheetItem(); if (!it) return; it.text = e.target.value; grow(e.target); typed();
+});
+document.getElementById("tdNotes").addEventListener("input", function (e) {
+  var it = sheetItem(); if (!it) return; it.notes = e.target.value; typed();
+});
+document.getElementById("todoSheet").addEventListener("click", function (e) {
+  var it = sheetItem(); if (!it) return;
+  var p = e.target.closest("#tdPri .kind");
+  if (p) { it.pri = +p.getAttribute("data-pri"); save(); paintSheet(); return; }
+  var k = e.target.closest("#tdKind .kind");
+  if (k) { it.kind = k.getAttribute("data-kind"); save(); paintSheet(); return; }
+  if (e.target.closest("#tdDone")) { it.done = !it.done; it.doneAt = Date.now(); save(); paintSheet(); return; }
+  if (e.target.closest("#tdDel")) {
+    if (!confirm("Delete this one? The notes go with it.")) return;
+    state.items = state.items.filter(function (x) { return x.id !== it.id; });
+    sheetId = null; document.getElementById("todoSheet").classList.remove("open");
+    save();
   }
 });
 
@@ -282,7 +510,7 @@ document.getElementById("addForm").addEventListener("submit", function (e) {
   e.preventDefault();
   var text = ta.value.trim();
   if (!text) return;
-  state.items.push({ id: uid(), text: text, kind: kind, done: false, at: Date.now() });
+  state.items.push({ id: uid(), text: text, kind: kind, pri: pri, notes: "", done: false, at: Date.now() });
   ta.value = ""; ta.style.height = "auto";
   save();
 });
@@ -307,9 +535,166 @@ function loadStats() {
     });
 }
 
+/* ── Inbox ──────────────────────────────────────────────────────────────────
+   GoHighLevel holds every conversation — email, Instagram, SMS. This reads and
+   replies through it, so a reply sent from the couch is in the same thread GHL
+   shows on the laptop. The GHL token never comes near this app: it lives on the
+   proxy, which asks for a passcode because these are real leads' phone numbers. */
+var IN_API = "https://trt-guy-site.vercel.app/api/inbox";
+var IN_KEY = "trtguy-cc-key";
+var CH = { email:"Email", ig:"Instagram", sms:"SMS", fb:"Facebook", wa:"WhatsApp", chat:"Chat", other:"Other" };
+var inKey = "", inConvos = [], inFilter = "", inOpen = null, inTimer = null;
+try { inKey = localStorage.getItem(IN_KEY) || ""; } catch (e) {}
+
+function inCall(qs, body) {
+  return fetch(IN_API + "?" + qs, {
+    method: body ? "POST" : "GET",
+    headers: body ? { "X-CC-Key": inKey, "Content-Type": "application/json" } : { "X-CC-Key": inKey },
+    body: body ? JSON.stringify(body) : undefined,
+  }).then(function (r) { return r.json().then(function (j) { return { ok: r.ok, status: r.status, j: j }; }); });
+}
+function inAgo(ts) {
+  if (!ts) return "";
+  var s = Math.max(0, (Date.now() - new Date(ts).getTime()) / 1000);
+  if (s < 90) return "now";
+  if (s < 3600) return Math.round(s / 60) + "m";
+  if (s < 86400) return Math.round(s / 3600) + "h";
+  if (s < 604800) return Math.round(s / 86400) + "d";
+  return new Date(ts).toLocaleDateString(undefined, { day: "numeric", month: "short" });
+}
+function inGate(show, msg) {
+  document.getElementById("inGate").style.display = show ? "flex" : "none";
+  document.getElementById("inFilters").hidden = show;
+  document.getElementById("inList").hidden = show;
+  document.getElementById("inGateErr").textContent = msg || "";
+}
+function inEnter() {
+  clearInterval(inTimer);
+  if (!inKey) return inGate(true, "");
+  inLoad();
+  inTimer = setInterval(function () { inLoad(true); }, 45000);   // nothing pushes to us
+}
+function inLoad(quiet) {
+  if (!inKey) return;
+  if (!quiet) setSync("", "loading…");
+  inCall("action=list&limit=30").then(function (r) {
+    if (r.status === 401) { inKey = ""; try { localStorage.removeItem(IN_KEY); } catch (e) {}
+      return inGate(true, "That passcode was not it."); }
+    if (!r.ok) { setSync("err", "GHL error"); return; }
+    inConvos = r.j.conversations || [];
+    inGate(false, "");
+    inPaintList();
+    var unread = inConvos.filter(function (c) { return c.unread > 0; }).length;
+    var badge = document.getElementById("inboxN");
+    badge.textContent = unread; badge.classList.toggle("has", unread > 0);
+    setSync("on", "synced");
+    if (inOpen) inPaintThread();
+  }).catch(function () { setSync("err", "offline"); });
+}
+function inPaintList() {
+  var rows = inFilter ? inConvos.filter(function (c) { return c.channel === inFilter; }) : inConvos;
+  var el = document.getElementById("inList");
+  if (!rows.length) {
+    el.innerHTML = '<div class="empty"><b>Nothing here</b>' +
+      (inFilter ? "No " + CH[inFilter] + " conversations in the last 30." : "Nothing came back from GoHighLevel.") + "</div>";
+    return;
+  }
+  el.innerHTML = rows.map(function (c) {
+    return '<div class="cv' + (c.unread ? " unread" : "") + '" data-id="' + c.id + '">' +
+      '<div class="av"></div><div class="bd"><div class="nm"><b></b>' +
+      '<span class="ch ' + c.channel + '">' + (CH[c.channel] || c.channel) + "</span>" +
+      (c.unread ? '<span class="un"></span>' : "") +
+      '<span class="ago">' + inAgo(c.at) + "</span></div>" +
+      '<div class="pv">' + (c.direction === "outbound" ? "<i>You: </i>" : "") + '<span class="pvt"></span></div>' +
+      "</div></div>";
+  }).join("");
+  // names and previews are other people's words — never built into HTML
+  var nodes = el.querySelectorAll(".cv");
+  rows.forEach(function (c, i) {
+    if (!nodes[i]) return;
+    nodes[i].querySelector(".av").textContent = (c.name || "?").trim().charAt(0).toUpperCase() || "?";
+    nodes[i].querySelector(".nm b").textContent = c.name;
+    nodes[i].querySelector(".pvt").textContent = c.preview || "(no text)";
+  });
+}
+function inShow(id) {
+  inOpen = inConvos.find(function (c) { return c.id === id; }) || null;
+  if (!inOpen) return;
+  document.getElementById("inSheet").classList.add("open");
+  document.getElementById("inWho").textContent = inOpen.name;
+  document.getElementById("inOn").textContent = "Replying on " + (CH[inOpen.channel] || inOpen.channel);
+  document.getElementById("inErr").textContent = "";
+  document.getElementById("inMsgs").innerHTML = '<div class="empty">Loading…</div>';
+  inPaintThread();
+}
+function inPaintThread() {
+  if (!inOpen) return;
+  inCall("action=thread&id=" + encodeURIComponent(inOpen.id)).then(function (r) {
+    var box = document.getElementById("inMsgs");
+    if (!r.ok) { box.innerHTML = '<div class="empty"><b>Could not load it</b>' +
+      ((r.j && r.j.error) || "GoHighLevel said no.") + "</div>"; return; }
+    var ms = r.j.messages || [];
+    if (!ms.length) { box.innerHTML = '<div class="empty">No messages in this one.</div>'; return; }
+    box.innerHTML = ms.map(function (m) {
+      return '<div class="bub ' + (m.inbound ? "in" : "out") + '"><span class="tx"></span>' +
+        '<span class="st">' + (CH[m.channel] || m.channel) + " · " + inAgo(m.at) +
+        (m.attachments ? " · " + m.attachments + " attachment" + (m.attachments > 1 ? "s" : "") : "") +
+        "</span></div>";
+    }).join("");
+    var nodes = box.querySelectorAll(".bub .tx");
+    ms.forEach(function (m, i) { if (nodes[i]) nodes[i].textContent = m.body || "(no text)"; });
+    box.scrollTop = box.scrollHeight;
+  });
+}
+document.getElementById("inBack").addEventListener("click", function () {
+  inOpen = null; document.getElementById("inSheet").classList.remove("open");
+});
+document.getElementById("inGateForm").addEventListener("submit", function (e) {
+  e.preventDefault();
+  inKey = document.getElementById("inKey").value.trim();
+  try { localStorage.setItem(IN_KEY, inKey); } catch (x) {}
+  inEnter();
+});
+document.getElementById("paneInbox").addEventListener("click", function (e) {
+  var f = e.target.closest(".in-filters .kind");
+  if (f) {
+    inFilter = f.getAttribute("data-ch");
+    document.querySelectorAll(".in-filters .kind").forEach(function (b) { b.classList.toggle("on", b === f); });
+    inPaintList(); return;
+  }
+  var cv = e.target.closest(".cv");
+  if (cv) inShow(cv.getAttribute("data-id"));
+});
+var inText = document.getElementById("inText");
+inText.addEventListener("input", function () {
+  inText.style.height = "auto"; inText.style.height = Math.min(inText.scrollHeight, 120) + "px";
+});
+document.getElementById("inForm").addEventListener("submit", function (e) {
+  e.preventDefault();
+  var text = inText.value.trim();
+  if (!text || !inOpen) return;
+  var err = document.getElementById("inErr");
+  err.textContent = ""; setSync("", "sending…");
+  inCall("action=send", { contactId: inOpen.contactId, conversationId: inOpen.id,
+    channel: inOpen.channel, text: text, subject: "Re: your message" })
+    .then(function (r) {
+      if (!r.ok) {
+        // Instagram and Facebook refuse a reply more than 24h after theirs;
+        // SMS needs a number on the location. Say which it was.
+        err.textContent = (r.j && r.j.error) || "It did not send.";
+        setSync("err", "not sent"); return;
+      }
+      inText.value = ""; inText.style.height = "auto";
+      setSync("on", "sent");
+      inPaintThread(); inLoad(true);
+    })
+    .catch(function () { err.textContent = "No connection."; setSync("err", "offline"); });
+});
+
 loadLocal();
 render();
 pull();
+if (inKey) inLoad(true);            // unread badge on the tab without opening it
 window.addEventListener("focus", pull);
 if ("serviceWorker" in navigator) navigator.serviceWorker.register("sw.js").catch(function () {});
 </script>
