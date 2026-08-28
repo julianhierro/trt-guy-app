@@ -183,6 +183,14 @@ html,body{margin:0;padding:0;background:var(--bg);color:var(--txt);
 .in-reply button{flex:none;width:46px;height:46px;border:0;border-radius:12px;background:var(--acc);
   color:#fff;font-size:20px;line-height:1;cursor:pointer}
 .kind.knew{background:var(--acc-soft);border-color:var(--acc);color:#9dbcff}
+.kind.karch.on{background:var(--card-2);border-color:var(--line-2);color:var(--txt)}
+.sb-danger{color:#ff9a8b;border-color:rgba(239,68,68,.4)}
+.cv{position:relative}
+.cv .acts{display:flex;gap:5px;margin-top:9px}
+.cv .acts button{border:1px solid var(--line-2);background:var(--card-2);color:var(--mut);
+  cursor:pointer;border-radius:7px;padding:6px 10px;font:700 10px/1 Inter,sans-serif;
+  letter-spacing:.08em;text-transform:uppercase}
+.cv .acts button.rm{color:#ff9a8b;border-color:rgba(239,68,68,.35)}
 .in-on{display:flex;align-items:center;gap:8px;flex-wrap:wrap}
 .in-ch{display:flex;gap:5px}
 .in-ch button{font:700 10px/1 Inter,sans-serif;letter-spacing:.08em;text-transform:uppercase;
@@ -244,6 +252,7 @@ html,body{margin:0;padding:0;background:var(--bg);color:var(--txt);
       <button class="kind" data-ch="email" type="button">Email</button>
       <button class="kind" data-ch="ig" type="button">IG</button>
       <button class="kind" data-ch="sms" type="button">SMS</button>
+      <button class="kind karch" data-box="archived" type="button">Archived</button>
       <span class="kdiv"></span>
       <button class="kind knew" id="inNew" type="button">&#9998; New email</button>
     </div>
@@ -308,7 +317,8 @@ html,body{margin:0;padding:0;background:var(--bg);color:var(--txt);
   <div class="sheet-bar">
     <button type="button" class="sb-back" id="inBack">&larr; Inbox</button>
     <span class="sb-mid" id="inWho"></span>
-    <span style="width:52px"></span>
+    <button type="button" class="sb-del" id="inArch">Archive</button>
+    <button type="button" class="sb-del sb-danger" id="inDel">Del</button>
   </div>
   <div class="in-msgs" id="inMsgs"></div>
   <div class="in-reply">
@@ -593,7 +603,7 @@ function loadStats() {
 var IN_API = "https://trt-guy-site.vercel.app/api/inbox";
 var IN_KEY = "trtguy-cc-key";
 var CH = { email:"Email", ig:"Instagram", sms:"SMS", fb:"Facebook", wa:"WhatsApp", chat:"Chat", other:"Other" };
-var inKey = "", inConvos = [], inFilter = "", inOpen = null, inTimer = null, inSendOn = "";
+var inKey = "", inConvos = [], inFilter = "", inBox = "inbox", inOpen = null, inTimer = null, inSendOn = "";
 try { inKey = localStorage.getItem(IN_KEY) || ""; } catch (e) {}
 
 function inCall(qs, body) {
@@ -634,7 +644,7 @@ function inLoad(quiet) {
     inConvos = r.j.conversations || [];
     inGate(false, "");
     inPaintList();
-    var unread = inConvos.filter(function (c) { return c.unread > 0; }).length;
+    var unread = inConvos.filter(function (c) { return c.unread > 0 && !c.archived; }).length;
     var badge = document.getElementById("inboxN");
     badge.textContent = unread; badge.classList.toggle("has", unread > 0);
     setSync("on", "synced");
@@ -642,11 +652,16 @@ function inLoad(quiet) {
   }).catch(function () { setSync("err", "offline"); });
 }
 function inPaintList() {
-  var rows = inFilter ? inConvos.filter(function (c) { return c.channel === inFilter; }) : inConvos;
+  var rows = inConvos.filter(function (c) {
+    var box = inBox === "archived" ? c.archived : !c.archived;
+    return box && (!inFilter || c.channel === inFilter);
+  });
   var el = document.getElementById("inList");
   if (!rows.length) {
     el.innerHTML = '<div class="empty"><b>Nothing here</b>' +
-      (inFilter ? "No " + CH[inFilter] + " conversations in the last 30." : "Nothing came back from GoHighLevel.") + "</div>";
+      (inBox === "archived" ? "Nothing archived yet."
+       : inFilter ? "No " + CH[inFilter] + " conversations in the last 30."
+       : "Nothing came back from GoHighLevel.") + "</div>";
     return;
   }
   el.innerHTML = rows.map(function (c) {
@@ -656,6 +671,8 @@ function inPaintList() {
       (c.unread ? '<span class="un"></span>' : "") +
       '<span class="ago">' + inAgo(c.at) + "</span></div>" +
       '<div class="pv">' + (c.direction === "outbound" ? "<i>You: </i>" : "") + '<span class="pvt"></span></div>' +
+      '<div class="acts"><button type="button" class="ar">' + (c.archived ? "Restore" : "Archive") + "</button>" +
+      '<button type="button" class="rm">Delete</button></div>' +
       "</div></div>";
   }).join("");
   // names and previews are other people's words — never built into HTML
@@ -675,6 +692,7 @@ function inShow(id) {
   document.getElementById("inWho").textContent = inOpen.name;
   document.getElementById("inErr").textContent = "";
   document.getElementById("inMsgs").innerHTML = '<div class="empty">Loading…</div>';
+  document.getElementById("inArch").textContent = inOpen.archived ? "Restore" : "Archive";
   inPaintChannels(inOpen.can || [inOpen.channel]);
   inPaintThread();
 }
@@ -721,6 +739,47 @@ function inPaintThread() {
     box.scrollTop = box.scrollHeight;
   });
 }
+/* ── Archive and delete ──────────────────────────────────────────────────────
+   Archive is GoHighLevel's own inbox flag, so archiving here archives there.
+   Delete is GHL's delete: the thread and every message in it, permanently. */
+function inArchive(id) {
+  var c = inConvos.find(function (x) { return x.id === id; });
+  if (!c) return;
+  var want = !c.archived;
+  setSync("", want ? "archiving…" : "restoring…");
+  inCall("action=archive", { id: id, archived: want }).then(function (r) {
+    if (!r.ok) { setSync("err", "not archived"); return; }
+    c.archived = want;
+    setSync("on", want ? "archived" : "restored");
+    if (inOpen && inOpen.id === id && want) {
+      inOpen = null; document.getElementById("inSheet").classList.remove("open");
+    }
+    inPaintList();
+    var unread = inConvos.filter(function (x) { return x.unread > 0 && !x.archived; }).length;
+    var badge = document.getElementById("inboxN");
+    badge.textContent = unread; badge.classList.toggle("has", unread > 0);
+  }).catch(function () { setSync("err", "offline"); });
+}
+function inDelete(id) {
+  var c = inConvos.find(function (x) { return x.id === id; });
+  if (!c) return;
+  if (!confirm("Delete the whole conversation with " + c.name + "?\n\n" +
+               "Every message in it goes, in GoHighLevel too. This cannot be undone.\n\n" +
+               "Archive instead if you just want it out of the way.")) return;
+  setSync("", "deleting…");
+  inCall("action=delete", { id: id, confirm: "DELETE" }).then(function (r) {
+    if (!r.ok) { alert((r.j && r.j.error) || "GoHighLevel would not delete it."); setSync("err", "not deleted"); return; }
+    inConvos = inConvos.filter(function (x) { return x.id !== id; });
+    if (inOpen && inOpen.id === id) {
+      inOpen = null; document.getElementById("inSheet").classList.remove("open");
+    }
+    setSync("on", "deleted");
+    inPaintList();
+  }).catch(function () { setSync("err", "offline"); });
+}
+document.getElementById("inArch").addEventListener("click", function () { if (inOpen) inArchive(inOpen.id); });
+document.getElementById("inDel").addEventListener("click", function () { if (inOpen) inDelete(inOpen.id); });
+
 document.getElementById("inBack").addEventListener("click", function () {
   inOpen = null; document.getElementById("inSheet").classList.remove("open");
 });
@@ -818,10 +877,20 @@ document.getElementById("inGateForm").addEventListener("submit", function (e) {
 document.getElementById("paneInbox").addEventListener("click", function (e) {
   var f = e.target.closest(".in-filters .kind");
   if (f && !f.classList.contains("knew")) {
-    inFilter = f.getAttribute("data-ch");
-    document.querySelectorAll(".in-filters .kind").forEach(function (b) { b.classList.toggle("on", b === f); });
+    if (f.hasAttribute("data-box")) {              // Archived is a view, not a channel
+      inBox = inBox === "archived" ? "inbox" : "archived";
+      f.classList.toggle("on", inBox === "archived");
+    } else {
+      inFilter = f.getAttribute("data-ch");
+      document.querySelectorAll(".in-filters .kind:not(.karch):not(.knew)").forEach(function (b) {
+        b.classList.toggle("on", b === f); });
+    }
     inPaintList(); return;
   }
+  var ar = e.target.closest(".cv .ar");
+  if (ar) { inArchive(ar.closest(".cv").getAttribute("data-id")); return; }
+  var rm = e.target.closest(".cv .rm");
+  if (rm) { inDelete(rm.closest(".cv").getAttribute("data-id")); return; }
   var cv = e.target.closest(".cv");
   if (cv) inShow(cv.getAttribute("data-id"));
 });
