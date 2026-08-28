@@ -1,7 +1,7 @@
 /* Just enough service worker to make the app open instantly and survive a dead
    signal. Notes are kept in localStorage and synced separately, so nothing here
    touches your data. */
-var CACHE = "trtguy-app-v5";
+var CACHE = "trtguy-app-v6";
 var SHELL = ["./", "./index.html", "./icon-180.png", "./icon-192.png", "./manifest.json"];
 
 self.addEventListener("install", function (e) {
