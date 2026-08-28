@@ -181,6 +181,33 @@ html,body{margin:0;padding:0;background:var(--bg);color:var(--txt);
 .in-reply textarea:focus{border-color:var(--acc)}
 .in-reply button{flex:none;width:46px;height:46px;border:0;border-radius:12px;background:var(--acc);
   color:#fff;font-size:20px;line-height:1;cursor:pointer}
+.kind.knew{background:var(--acc-soft);border-color:var(--acc);color:#9dbcff}
+.in-on{display:flex;align-items:center;gap:8px;flex-wrap:wrap}
+.in-ch{display:flex;gap:5px}
+.in-ch button{font:700 10px/1 Inter,sans-serif;letter-spacing:.08em;text-transform:uppercase;
+  padding:6px 10px;border-radius:999px;cursor:pointer;background:var(--card);
+  color:var(--mut);border:1px solid var(--line-2)}
+.in-ch button.on{background:var(--acc-soft);border-color:var(--acc);color:#9dbcff}
+.in-subj{width:100%;margin-bottom:8px;background:var(--card);border:1px solid var(--line-2);
+  border-radius:11px;color:var(--txt);padding:11px 13px;font:400 16px Inter,sans-serif;outline:0}
+.in-subj:focus{border-color:var(--acc)}
+.cm-to{position:relative;flex:none}
+.sheet-body input,.sheet-body textarea#cmText{width:100%;background:var(--card);
+  border:1px solid var(--line-2);border-radius:12px;color:var(--txt);padding:13px 14px;
+  font:400 16px/1.5 Inter,sans-serif;outline:0}
+.sheet-body input:focus,.sheet-body textarea#cmText:focus{border-color:var(--acc)}
+#cmText{flex:1;min-height:220px;resize:none;line-height:1.6}
+.cm-hits{position:absolute;top:100%;left:0;right:0;z-index:3;margin-top:6px;max-height:230px;overflow:auto;
+  background:var(--card-2);border:1px solid var(--line-2);border-radius:12px;
+  box-shadow:0 16px 40px rgba(0,0,0,.6)}
+.cm-hits div{padding:12px 14px;cursor:pointer;font-size:14.5px;border-bottom:1px solid var(--line)}
+.cm-hits div:last-child{border-bottom:0}
+.cm-hits b{display:block;font-weight:600}
+.cm-hits span{color:var(--mut);font-size:12.5px}
+.cm-picked{display:flex;align-items:center;gap:10px;padding:13px 14px;border-radius:12px;
+  background:var(--acc-soft);border:1px solid rgba(26,92,255,.45);font-size:14.5px}
+.cm-picked span{flex:1;min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.cm-picked button{border:0;background:none;color:var(--mut);font-size:20px;cursor:pointer;padding:0 2px}
 </style>
 </head>
 <body>
@@ -216,6 +243,8 @@ html,body{margin:0;padding:0;background:var(--bg);color:var(--txt);
       <button class="kind" data-ch="email" type="button">Email</button>
       <button class="kind" data-ch="ig" type="button">IG</button>
       <button class="kind" data-ch="sms" type="button">SMS</button>
+      <span class="kdiv"></span>
+      <button class="kind knew" id="inNew" type="button">&#9998; New email</button>
     </div>
     <div id="inList"></div>
   </div>
@@ -255,6 +284,25 @@ html,body{margin:0;padding:0;background:var(--bg);color:var(--txt);
   <div class="sheet-foot"><button type="button" id="tdDone">Mark done</button></div>
 </div>
 
+<div class="sheet" id="cmSheet">
+  <div class="sheet-bar">
+    <button type="button" class="sb-back" id="cmBack">&larr; Inbox</button>
+    <span class="sb-mid">New email</span>
+    <span style="width:52px"></span>
+  </div>
+  <div class="sheet-body">
+    <div class="cm-to">
+      <input type="text" id="cmTo" placeholder="Name or email address" autocomplete="off" autocapitalize="off">
+      <div class="cm-hits" id="cmHits" hidden></div>
+      <div class="cm-picked" id="cmPicked" hidden><span></span><button type="button" id="cmClear" aria-label="Clear">&times;</button></div>
+    </div>
+    <input type="text" id="cmSubj" placeholder="Subject">
+    <textarea id="cmText" placeholder="Write it&hellip;"></textarea>
+    <span class="in-err" id="cmErr"></span>
+  </div>
+  <div class="sheet-foot"><button type="button" id="cmSend" class="on">Send email</button></div>
+</div>
+
 <div class="sheet" id="inSheet">
   <div class="sheet-bar">
     <button type="button" class="sb-back" id="inBack">&larr; Inbox</button>
@@ -263,7 +311,8 @@ html,body{margin:0;padding:0;background:var(--bg);color:var(--txt);
   </div>
   <div class="in-msgs" id="inMsgs"></div>
   <div class="in-reply">
-    <div class="in-on" id="inOn"></div>
+    <div class="in-on"><span id="inOn"></span><span class="in-ch" id="inCh"></span></div>
+    <input type="text" id="inSubj" class="in-subj" placeholder="Subject" hidden>
     <form class="add-in" id="inForm">
       <textarea id="inText" rows="1" placeholder="Reply&hellip;" enterkeyhint="send"></textarea>
       <button type="submit" aria-label="Send">&uarr;</button>
@@ -543,7 +592,7 @@ function loadStats() {
 var IN_API = "https://trt-guy-site.vercel.app/api/inbox";
 var IN_KEY = "trtguy-cc-key";
 var CH = { email:"Email", ig:"Instagram", sms:"SMS", fb:"Facebook", wa:"WhatsApp", chat:"Chat", other:"Other" };
-var inKey = "", inConvos = [], inFilter = "", inOpen = null, inTimer = null;
+var inKey = "", inConvos = [], inFilter = "", inOpen = null, inTimer = null, inSendOn = "";
 try { inKey = localStorage.getItem(IN_KEY) || ""; } catch (e) {}
 
 function inCall(qs, body) {
@@ -620,16 +669,41 @@ function inPaintList() {
 function inShow(id) {
   inOpen = inConvos.find(function (c) { return c.id === id; }) || null;
   if (!inOpen) return;
+  inSendOn = inOpen.channel;                    // default: answer where they wrote
   document.getElementById("inSheet").classList.add("open");
   document.getElementById("inWho").textContent = inOpen.name;
-  document.getElementById("inOn").textContent = "Replying on " + (CH[inOpen.channel] || inOpen.channel);
   document.getElementById("inErr").textContent = "";
   document.getElementById("inMsgs").innerHTML = '<div class="empty">Loading…</div>';
+  inPaintChannels(inOpen.can || [inOpen.channel]);
   inPaintThread();
+}
+
+/* Answering an Instagram lead by email is a real move — but only when GHL has
+   an email for them, so the row is built from the contact record. */
+function inPaintChannels(can) {
+  var list = (can || []).filter(function (c) { return ["email","sms","ig","fb","wa","chat"].indexOf(c) >= 0; });
+  if (!list.length) list.push(inOpen.channel);
+  if (list.indexOf(inSendOn) < 0) inSendOn = list[0];
+  document.getElementById("inOn").textContent = list.length > 1 ? "Reply on" : "Replying on";
+  document.getElementById("inCh").innerHTML = list.map(function (c) {
+    return '<button type="button" data-ch="' + c + '"' + (c === inSendOn ? ' class="on"' : '') + ">" +
+      (CH[c] || c) + "</button>";
+  }).join("");
+  document.getElementById("inSubj").hidden = inSendOn !== "email";
 }
 function inPaintThread() {
   if (!inOpen) return;
-  inCall("action=thread&id=" + encodeURIComponent(inOpen.id)).then(function (r) {
+  inCall("action=thread&id=" + encodeURIComponent(inOpen.id) +
+         "&contactId=" + encodeURIComponent(inOpen.contactId || "")).then(function (r) {
+    // the contact record knows every address; the conversation only knows one
+    if (r.ok && r.j.contact) {
+      var can = [];
+      if (r.j.contact.email) can.push("email");
+      if (r.j.contact.phone) can.push("sms");
+      if (can.indexOf(inOpen.channel) < 0) can.push(inOpen.channel);
+      inOpen.can = can;
+      inPaintChannels(can);
+    }
     var box = document.getElementById("inMsgs");
     if (!r.ok) { box.innerHTML = '<div class="empty"><b>Could not load it</b>' +
       ((r.j && r.j.error) || "GoHighLevel said no.") + "</div>"; return; }
@@ -649,6 +723,91 @@ function inPaintThread() {
 document.getElementById("inBack").addEventListener("click", function () {
   inOpen = null; document.getElementById("inSheet").classList.remove("open");
 });
+document.getElementById("inSheet").addEventListener("click", function (e) {
+  var b = e.target.closest(".in-ch button");
+  if (!b) return;
+  inSendOn = b.getAttribute("data-ch");
+  document.querySelectorAll(".in-ch button").forEach(function (x) { x.classList.toggle("on", x === b); });
+  document.getElementById("inSubj").hidden = inSendOn !== "email";
+  document.getElementById("inErr").textContent = "";
+});
+
+/* ── Compose ────────────────────────────────────────────────────────────────
+   A first email to someone with no thread yet. Writing to an address that is
+   not in the CRM creates the contact — the reply has to land somewhere GHL can
+   thread it. */
+var cmPick = null, cmTimer = null;
+function cmOpen() {
+  cmPick = null;
+  document.getElementById("cmTo").value = "";
+  document.getElementById("cmSubj").value = "";
+  document.getElementById("cmText").value = "";
+  document.getElementById("cmErr").textContent = "";
+  document.getElementById("cmPicked").hidden = true;
+  document.getElementById("cmTo").hidden = false;
+  document.getElementById("cmHits").hidden = true;
+  document.getElementById("cmSheet").classList.add("open");
+  setTimeout(function () { document.getElementById("cmTo").focus(); }, 120);
+}
+function cmSet(c) {
+  cmPick = c;
+  var box = document.getElementById("cmPicked");
+  box.querySelector("span").textContent = c.name + (c.email ? "  ·  " + c.email : "");
+  box.hidden = false;
+  document.getElementById("cmTo").hidden = true;
+  document.getElementById("cmHits").hidden = true;
+  document.getElementById("cmSubj").focus();
+}
+document.getElementById("inNew").addEventListener("click", cmOpen);
+document.getElementById("cmBack").addEventListener("click", function () {
+  document.getElementById("cmSheet").classList.remove("open");
+});
+document.getElementById("cmClear").addEventListener("click", function () {
+  cmPick = null;
+  document.getElementById("cmPicked").hidden = true;
+  var to = document.getElementById("cmTo");
+  to.hidden = false; to.value = ""; to.focus();
+});
+document.getElementById("cmTo").addEventListener("input", function () {
+  clearTimeout(cmTimer);
+  var q = document.getElementById("cmTo").value.trim();
+  var hits = document.getElementById("cmHits");
+  if (q.length < 2) { hits.hidden = true; return; }
+  cmTimer = setTimeout(function () {
+    inCall("action=contacts&q=" + encodeURIComponent(q)).then(function (r) {
+      var rows = (r.ok && r.j.contacts) || [];
+      if (!rows.length) { hits.hidden = true; return; }
+      hits.innerHTML = rows.map(function () { return "<div><b></b><span></span></div>"; }).join("");
+      // names come out of the CRM — set as text, never built into HTML
+      var nodes = hits.querySelectorAll("div");
+      rows.forEach(function (c, i) {
+        nodes[i].querySelector("b").textContent = c.name;
+        nodes[i].querySelector("span").textContent = c.email || c.phone;
+        nodes[i].addEventListener("click", function () { cmSet(c); });
+      });
+      hits.hidden = false;
+    });
+  }, 260);
+});
+document.getElementById("cmSend").addEventListener("click", function () {
+  var err = document.getElementById("cmErr");
+  var body = { subject: document.getElementById("cmSubj").value.trim(),
+               text: document.getElementById("cmText").value.trim() };
+  if (cmPick) body.contactId = cmPick.id;
+  else body.email = document.getElementById("cmTo").value.trim();
+  if (!body.subject) { err.textContent = "Give it a subject."; return; }
+  if (!body.text) { err.textContent = "Nothing to send."; return; }
+  if (!cmPick && !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(body.email)) {
+    err.textContent = "Pick a contact or type a real address."; return;
+  }
+  err.textContent = ""; setSync("", "sending…");
+  inCall("action=compose", body).then(function (r) {
+    if (!r.ok) { err.textContent = (r.j && r.j.error) || "It did not send."; setSync("err", "not sent"); return; }
+    setSync("on", "sent");
+    document.getElementById("cmSheet").classList.remove("open");
+    inLoad();                                   // the new thread shows up in the list
+  }).catch(function () { err.textContent = "No connection."; setSync("err", "offline"); });
+});
 document.getElementById("inGateForm").addEventListener("submit", function (e) {
   e.preventDefault();
   inKey = document.getElementById("inKey").value.trim();
@@ -657,7 +816,7 @@ document.getElementById("inGateForm").addEventListener("submit", function (e) {
 });
 document.getElementById("paneInbox").addEventListener("click", function (e) {
   var f = e.target.closest(".in-filters .kind");
-  if (f) {
+  if (f && !f.classList.contains("knew")) {
     inFilter = f.getAttribute("data-ch");
     document.querySelectorAll(".in-filters .kind").forEach(function (b) { b.classList.toggle("on", b === f); });
     inPaintList(); return;
@@ -675,8 +834,10 @@ document.getElementById("inForm").addEventListener("submit", function (e) {
   if (!text || !inOpen) return;
   var err = document.getElementById("inErr");
   err.textContent = ""; setSync("", "sending…");
+  var subj = document.getElementById("inSubj").value.trim();
   inCall("action=send", { contactId: inOpen.contactId, conversationId: inOpen.id,
-    channel: inOpen.channel, text: text, subject: "Re: your message" })
+    channel: inSendOn || inOpen.channel, text: text,
+    subject: subj || ("Re: " + (inOpen.name || "your message")) })
     .then(function (r) {
       if (!r.ok) {
         // Instagram and Facebook refuse a reply more than 24h after theirs;
@@ -685,6 +846,7 @@ document.getElementById("inForm").addEventListener("submit", function (e) {
         setSync("err", "not sent"); return;
       }
       inText.value = ""; inText.style.height = "auto";
+      document.getElementById("inSubj").value = "";
       setSync("on", "sent");
       inPaintThread(); inLoad(true);
     })
